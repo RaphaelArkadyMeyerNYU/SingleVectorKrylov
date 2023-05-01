@@ -1,0 +1,52 @@
+\input{plot_headers}
+
+\newcommand{\addseries}[3]{
+	\addplot [#1, mark=pentagon*] table [x=gaps, y=#2itersMedian, col sep=comma]{#3};
+	\addlegendentry{\(t=#2\)};
+	\addplot [#1, forget plot, opacity=0, name path = Top] table [x=gaps, y=#2itersTop, col sep=comma]{#3};
+	\addplot [#1, forget plot, opacity=0, name path = Bot] table [x=gaps, y=#2itersBot, col sep=comma]{#3};
+	\addplot [#1, forget plot, opacity=0.2] fill between [
+		of = Top and Bot
+	];
+}
+
+\newcommand{\makeLpPlot}[2]{
+% \hspace{-1cm} % There's an extra cm of whitespace to the left, for some reason\hspace{-1cm} % There's an extra cm of whitespace to the left, for some reason
+\begin{tikzpicture}
+\begin{loglogaxis}[
+	title={#1},
+	xlabel={Gap size (\(g_{min}\))},
+	ylabel={Relative Error (\(\varepsilon_{empirical}\))},
+	xmin=0.5e-10,
+	xmax=1.75,
+	ymin=0.3e-16,
+	ymax=1e-1,
+	grid=major,
+	ytick={1e-5, 1e-10, 1e-15},
+	xtick={1e-10, 1e-5, 1},
+	yticklabel style={
+        /pgf/number format/fixed,
+        /pgf/number format/precision=5
+	},
+	scaled y ticks=false,
+	legend pos=outer north east,
+	every axis grid/.append style={ultra thin},
+	scale=0.85
+]
+\addseries{cb_a}{25}{#2}
+\addseries{cb_b}{26}{#2}
+\addseries{cb_c}{27}{#2}
+\addseries{cb_d}{28}{#2}
+\addseries{cb_f}{29}{#2}
+\addseries{cb_g}{30}{#2}
+\addseries{cb_h}{31}{#2}
+\addseries{cb_i}{32}{#2}
+\addseries{cb_k}{33}{#2}
+\addseries{cb_l}{34}{#2}
+\end{loglogaxis}
+\end{tikzpicture}
+}
+
+\begin{document}
+\makeLpPlot{Impact of Minimum Gap on Single Vector Krylov}{./exports/plot_gap_data_d1000_k10_r11_trials500__2022-09-07-12-09.csv}
+\end{document}

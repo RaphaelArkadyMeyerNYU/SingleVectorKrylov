@@ -1,0 +1,63 @@
+\input{plot_headers}
+
+\usepgfplotslibrary{groupplots}
+
+% Courtesy of <<tex.stackexchange.com/questions/199376>>
+% Style to select only points from #1 to #2 (inclusive)
+\pgfplotsset{select coords between index/.style 2 args={
+    x filter/.code={
+        \ifnum\coordindex<#1\def\pgfmathresult{}\fi
+        \ifnum\coordindex>#2\def\pgfmathresult{}\fi
+    }
+}}
+
+\newcommand{\addseries}[6]{
+	% #1: csv filename
+	% #2: color
+	% #3: csv series name
+	% #4: legend series name
+	% #5: number of entries
+	% #6: opacity
+	\addplot [#2, mark=pentagon*, opacity=#6, select coords between index={0}{#5}] table [x=#3SubspaceSize, y=#3Median, col sep=comma]{#1};
+	\addlegendentry{#4};
+	\addplot [#2, forget plot, opacity=0, name path = Top, select coords between index={0}{#5}] table [x=#3SubspaceSize, y=#3Top, col sep=comma]{#1};
+	\addplot [#2, forget plot, opacity=0, name path = Bot, select coords between index={0}{#5}] table [x=#3SubspaceSize, y=#3Bot, col sep=comma]{#1};
+	\addplot [#2, forget plot, opacity=0.2] fill between [
+		of = Top and Bot
+	];
+}
+
+\newcommand{\makeLpPlot}[2]{
+\begin{tikzpicture}
+\begin{groupplot}[
+	group style ={group size=2 by 1, horizontal sep=2cm}, 
+	xlabel={Dimension of Kyrlov Subspace},
+	grid=major,
+	xtick={150, 220, 290, 360, 430, 500},
+	yticklabel style={
+        /pgf/number format/fixed,
+        /pgf/number format/precision=5
+	},
+	scaled y ticks=false,
+	every axis grid/.append style={ultra thin},
+	legend pos=outer north east,
+]
+\nextgroupplot[title={Linear Plot}, ylabel={Relative Error (\(\varepsilon_{empirical}\))}]
+\addseries{#2}{cb_d}{svk}{Single Vector Krylov}{20}{1}
+\addseries{#2}{cb_c}{bk}{Block \(k\)}{6}{1}
+\addseries{#2}{cb_a}{b3}{Block 3}{20}{1}
+\addseries{#2}{cb_l}{b2}{Block 2}{20}{1}
+\legend{}
+\nextgroupplot[ymode=log, title={Log/Linear Plot}]
+\addseries{#2}{cb_c}{bk}{Block Size \(k\)}{6}{1}
+\addseries{#2}{cb_a}{b3}{Block Size 3}{20}{1}
+\addseries{#2}{cb_l}{b2}{Block Size 2}{20}{1}
+\addseries{#2}{cb_d}{svk}{Block Size 1}{20}{1}
+\end{groupplot}
+\node (title) at ($(group c1r1.north)!0.5!(group c2r1.north)+(0,3.5em)$) {\Large #1};
+\end{tikzpicture}
+}
+
+\begin{document}
+\makeLpPlot{Impact of Block Size on Convergence under Repeated Singular Values}{./exports/plot_perturb_data_d1000_k50_r20_trials10__2023-04-27-18-28.csv}
+\end{document}

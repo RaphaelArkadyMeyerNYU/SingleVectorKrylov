@@ -1,0 +1,63 @@
+\input{plot_headers}
+
+% Courtesy of <<tex.stackexchange.com/questions/199376>>
+% Style to select only points from #1 to #2 (inclusive)
+\pgfplotsset{select coords between index/.style 2 args={
+    x filter/.code={
+        \ifnum\coordindex<#1\def\pgfmathresult{}\fi
+        \ifnum\coordindex>#2\def\pgfmathresult{}\fi
+    }
+}}
+
+\newcommand{\addseries}[7]{
+	% #1: csv filename
+	% #2: color
+	% #3: csv series name
+	% #4: legend series name
+	% #5: number of entries
+	% #6: opacity
+	% #7: marker
+	\addplot [#2, mark=#7, opacity=#6, select coords between index={0}{#5}] table [x=#3SubspaceSize, y=#3Median, col sep=comma]{#1};
+	\addlegendentry{#4};
+	\addplot [#2, forget plot, opacity=0, name path = Top, select coords between index={0}{#5}] table [x=#3SubspaceSize, y=#3Top, col sep=comma]{#1};
+	\addplot [#2, forget plot, opacity=0, name path = Bot, select coords between index={0}{#5}] table [x=#3SubspaceSize, y=#3Bot, col sep=comma]{#1};
+	\addplot [#2, forget plot, opacity=0.2] fill between [
+		of = Top and Bot
+	];
+}
+
+\newcommand{\makeLpPlot}[3]{
+\begin{tikzpicture}
+\begin{#3}[
+	title={\Large #1},
+	xlabel={Dimension of Kyrlov Subspace},
+	ylabel={Relative Error (\(\varepsilon_{empirical}\))},
+	grid=major,
+	yticklabel style={
+        /pgf/number format/fixed,
+        /pgf/number format/precision=5
+	},
+	every axis grid/.append style={ultra thin},
+	legend pos=outer north east,
+	reverse legend,
+	ymode=log,
+	legend cell align={left}
+]
+\addseries{#2}{cb_l}{bk+4_ortho}{Block Size k+4 (ortho)}{7}{1}{pentagon*}
+\addseries{#2}{cb_k}{bk+4_lanczos}{Block Size k+4 (Lanczos)}{7}{1}{x}
+% 
+\addseries{#2}{cb_c}{bk_ortho}{Block Size k (ortho)}{7}{1}{pentagon*}
+\addseries{#2}{cb_b}{bk_lanczos}{Block Size k (Lanczos)}{7}{1}{x}
+% 
+\addseries{#2}{cb_h}{b2_ortho}{Block Size 2 (ortho)}{20}{1}{pentagon*}
+\addseries{#2}{cb_f}{b2_lanczos}{Block Size 2 (Lanczos)}{20}{1}{x}
+% 
+\addseries{#2}{cb_e}{svk_ortho}{Block Size 1 (ortho)}{20}{1}{pentagon*}
+\addseries{#2}{cb_d}{svk_lanczos}{Block Size 1 (Lanczos)}{20}{1}{x}
+\end{#3}
+\end{tikzpicture}
+}
+
+\begin{document}
+\makeLpPlot{Impact of Block Size and Orthogonalization on Convergence}{./exports/plot_ortho_data_n_1.1-exp-law_d1000_k50_r20_trials100__2023-04-28-11-16.csv}{axis}
+\end{document}
