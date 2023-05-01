@@ -1,6 +1,6 @@
 ## Single Vector Krylov
 
-This is the public code repository for _On the Unreasonable Effectiveness of Single Vector Krylov Methods for Low-Rank Approximation_, a paper by [Raphael Meyer](https://ram900.hosting.nyu.edu/), [Cameron Musco](https://people.cs.umass.edu/~cmusco/), and (Christopher Musco)[http://chrismusco.com/].
+This is the public code repository for _On the Unreasonable Effectiveness of Single Vector Krylov Methods for Low-Rank Approximation_, a paper by [Raphael Meyer](https://ram900.hosting.nyu.edu/), [Cameron Musco](https://people.cs.umass.edu/~cmusco/), and [Christopher Musco](http://chrismusco.com/).
 
 This repo contains Julia code to recreate the paper's experiments, as well as the exact experimental data that generated our plots and the Latex code to generate our exact figures.
 
